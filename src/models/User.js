@@ -15,4 +15,7 @@ export const User = sequelize.define('user', {
     type: DataTypes.STRING,
     defaultValue: 'user',
   },
+  activationToken: {
+    type: DataTypes.STRING,
+  },
 });
