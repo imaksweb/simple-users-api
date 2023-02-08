@@ -1,5 +1,11 @@
-function registration(req, res, next) {
-  res.send('Registration');
+import { User } from '../models/User.js';
+
+async function register(req, res, next) {
+  const { email, password } = req.body;
+
+  const user = await User.create({ email, password });
+  
+  res.send(user);
 }
 
-export const authController = { registration };
+export const authController = { register };
