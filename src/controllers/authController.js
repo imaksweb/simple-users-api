@@ -1,3 +1,5 @@
+import bcrypt from 'bcrypt';
+
 import { ApiError } from '../exceptions/ApiError.js';
 import { User } from '../models/User.js';
 import { jwtService } from '../services/jwtService.js';
@@ -46,9 +48,14 @@ async function login(req, res, next) {
   const { email, password } = req.body;
   const user = await userService.getByEmail(email);
 
-  if (password !== user.password) {
-    res.sendStatus(401);
-    return;
+  if (!user) {
+    throw ApiError.BadRequest('User does not exist');
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw ApiError.BadRequest('Password is wrong');
   }
 
   const userData = userService.normalize(user);
@@ -78,4 +85,8 @@ async function activate(req, res, next) {
   res.send(user);
 }
 
-export const authController = { register, activate, login };
+async function logout(req, res, next) {
+  
+}
+
+export const authController = { register, activate, login, logout };

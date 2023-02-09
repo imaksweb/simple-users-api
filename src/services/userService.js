@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { emailService } from '../services/emailService.js';
 
@@ -16,6 +17,7 @@ function normalize({ id, email }) {
 
 async function register({ email, password }) {
   const existingUser = await getByEmail(email);
+  console.log(existingUser);
 
   if (existingUser) {
     throw ApiError.BadRequest('Email is already taken', {
@@ -24,7 +26,13 @@ async function register({ email, password }) {
   }
   
   const activationToken = uuidv4();
-  await User.create({ email, password, activationToken });
+  const hash = await bcrypt.hash(password, 10);
+
+  await User.create({
+    email,
+    password: hash,
+    activationToken
+  });
 
   await emailService.sendActivationLink(email, activationToken);
 }
