@@ -22,4 +22,14 @@ function getByToken(refreshToken) {
   })
 }
 
-export const tokenService = { getByToken, save };
+async function remove(userId) {
+  return Token.destroy({
+    where: { userId },
+  })
+}
+
+export const tokenService = {
+  getByToken,
+  save,
+  remove,
+};

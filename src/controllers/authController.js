@@ -101,7 +101,17 @@ async function activate(req, res, next) {
 }
 
 async function logout(req, res, next) {
+  const { refreshToken } = req.cookies;
+
+  const userData = jwtService.validateRefreshToken(refreshToken);
+
   res.clearCookie('accessToken');
+
+  if (userData) {
+    await tokenService.remove(userData.id);
+  }
+
+  res.sendStatus(204);
 }
 
 async function sendAuthentication(res, user) {
