@@ -1,7 +1,15 @@
 import jwt from 'jsonwebtoken';
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.JWT_ACCESS_SECRET);
+  return jwt.sign(user, process.env.JWT_ACCESS_SECRET, {
+    expiresIn: '10m',
+  });
+}
+
+function generateRefreshToken(user) {
+  return jwt.sign(user, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: '10d',
+  });
 }
 
 function validateAccessToken(token) {
@@ -12,4 +20,17 @@ function validateAccessToken(token) {
   }
 }
 
-export const jwtService = { generateAccessToken, validateAccessToken };
+function validateRefreshToken(token) {
+  try {
+    return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+  } catch (err) {
+    return null;
+  }
+}
+
+export const jwtService = {
+  generateAccessToken,
+  generateRefreshToken,
+  validateAccessToken,
+  validateRefreshToken,
+}
