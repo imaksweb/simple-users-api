@@ -15,7 +15,7 @@ function normalize({ id, email }) {
 }
 
 async function register({ email, password }) {
-  const existingUser = getByEmail(email);
+  const existingUser = await getByEmail(email);
 
   if (existingUser) {
     throw ApiError.BadRequest('Email is already taken', {
@@ -24,7 +24,7 @@ async function register({ email, password }) {
   }
   
   const activationToken = uuidv4();
-  const user = await User.create({ email, password, activationToken });
+  await User.create({ email, password, activationToken });
 
   await emailService.sendActivationLink(email, activationToken);
 }
