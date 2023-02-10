@@ -6,6 +6,16 @@ import { jwtService } from '../services/jwtService.js';
 import { tokenService } from '../services/tokenService.js';
 import { userService } from '../services/userService.js';
 
+function validateName(value) {
+  if (!value) {
+    return 'Name is required';
+  }
+
+  if (value.trim().length < 3) {
+    return 'At least 3 characters';
+  }
+};
+
 function validateEmail(value) {
   if (!value) {
     return 'Email is required';
@@ -28,19 +38,27 @@ function validatePassword(value) {
   }
 };
 
+function validateRole(value) {
+  if (value !== 'admin' || value !== 'boss' || value !== 'user') {
+    return 'Role should be admin, boss or user';
+  }
+};
+
 async function register(req, res, next) {
-  const { email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   const errors = {
+    name: validateName(name),
     email: validateEmail(email),
     password: validatePassword(password),
+    role: validateRole(role),
   }
 
-  if (errors.email || errors.password) {
+  if (errors.name || errors.email || errors.password) {
     throw ApiError.BadRequest('Validation error', errors);
   }
 
-  await userService.register({ email, password });
+  await userService.register({ name, email, password, role });
   
   res.send({ message: 'Ok' });
 }
@@ -103,7 +121,7 @@ async function activate(req, res, next) {
 async function logout(req, res, next) {
   const { refreshToken } = req.cookies;
 
-  const userData = jwtService.validateRefreshToken(refreshToken);
+  const userData = await jwtService.validateRefreshToken(refreshToken);
 
   res.clearCookie('accessToken');
 
