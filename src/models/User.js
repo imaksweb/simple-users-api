@@ -22,6 +22,7 @@ export const User = sequelize.define('user', {
   bossId: {
     type: DataTypes.INTEGER,
     allowNull: true,
+    defaultValue: null,
   },
   activationToken: {
     type: DataTypes.STRING,

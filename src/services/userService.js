@@ -5,7 +5,7 @@ import { emailService } from '../services/emailService.js';
 import { ApiError } from '../exceptions/ApiError.js';
 import { User } from '../models/User.js';
 
-function getAll(user) {
+async function getAll(user) {
   if (user.role === 'admin') {
     return User.findAll({
       where: { activationToken: null }
@@ -13,12 +13,14 @@ function getAll(user) {
   }
 
   if (user.role === 'boss') {
-    return User.findAll({
-      where: {
-        bossId: user.id,
-        activationToken: null,
-      }
-    });  
+    const boss = await User.findAll({
+      where: { id: user.id }
+    });
+    const subordinates = await User.findAll({
+      where: { bossId: user.id }
+    });
+    
+    return [ ...boss, ...subordinates ];
   }
 
   if (user.role === 'user') {
