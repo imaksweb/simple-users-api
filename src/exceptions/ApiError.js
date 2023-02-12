@@ -17,4 +17,8 @@ export class ApiError extends Error {
   static NotFound() {
     return new ApiError(404, 'Not found');
   }
+
+  static Forbidden(message) {
+    return new ApiError(403, message);
+  }
 }

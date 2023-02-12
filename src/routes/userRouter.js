@@ -6,4 +6,5 @@ import { authMiddleware } from '../middlewares/authMiddleware.js'
 export const userRouter = new express.Router();
 
 userRouter.get('/', catchError(authMiddleware), catchError(userController.getAll));
-// userRouter.get('/', catchError(userController.getAll));
+
+userRouter.patch('/:id', catchError(authMiddleware), catchError(userController.changeBoss));

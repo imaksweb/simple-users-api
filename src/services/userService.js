@@ -39,6 +39,12 @@ function getByEmail(email) {
   })
 }
 
+function updateBoss(newId, userId) {
+  return User.update({ bossId: newId }, {
+    where : { id: userId }
+  })
+}
+
 function normalize({ id, name, email, role, bossId }) {
   return { id, name, email, role, bossId };
 }
@@ -69,6 +75,7 @@ async function register({ name, email, password, role }) {
 export const userService = {
   getAll,
   getByEmail,
+  updateBoss,
   normalize,
-  register
+  register,
 };

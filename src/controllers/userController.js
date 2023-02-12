@@ -1,5 +1,7 @@
 import { userService } from '../services/userService.js';
 import { jwtService } from '../services/jwtService.js';
+import { User } from '../models/User.js';
+import { ApiError } from '../exceptions/ApiError.js';
 
 async function getAll(req, res, next) {
   const { refreshToken } = req.cookies;
@@ -17,4 +19,36 @@ async function getAll(req, res, next) {
   );
 }
 
-export const userController = { getAll };
+async function changeBoss(req, res, next) {
+  const { id } = req.params;
+  const { bossId: newBossId } = req.body;
+
+  const user = await User.findOne({
+    where: { id },
+  });
+
+  if (!user) {
+    throw ApiError.NotFound();
+  }
+
+  const { refreshToken } = req.cookies;
+
+  const bossData = await jwtService.validateRefreshToken(refreshToken);
+
+  if (!bossData) {
+    throw ApiError.Unauthorized();
+  }
+
+  if (bossData.id !== user.bossId) {
+    throw ApiError.Forbidden(`Only user's boss can do this`);
+  }
+
+  await userService.updateBoss(newBossId, id);
+
+  res.send({
+    success: 'true',
+    message: `User's boss with id=${id} is changed`
+  });
+}
+
+export const userController = { getAll, changeBoss };
