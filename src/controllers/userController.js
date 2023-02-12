@@ -3,6 +3,16 @@ import { jwtService } from '../services/jwtService.js';
 import { User } from '../models/User.js';
 import { ApiError } from '../exceptions/ApiError.js';
 
+function validateBossId(value) {
+  if (!value) {
+    return 'Provide id of new boss';
+  }
+
+  if (typeof value !== 'number') {
+    return 'id should be a number'
+  }
+}
+
 async function getAll(req, res, next) {
   const { refreshToken } = req.cookies;
 
@@ -22,6 +32,14 @@ async function getAll(req, res, next) {
 async function changeBoss(req, res, next) {
   const { id } = req.params;
   const { bossId: newBossId } = req.body;
+
+  const errors = {
+    bossId: validateBossId(newBossId),
+  };
+
+  if (errors.bossId) {
+    throw ApiError.BadRequest('Validation error', errors);
+  }
 
   const user = await User.findOne({
     where: { id },
