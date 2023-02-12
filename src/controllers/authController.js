@@ -141,7 +141,7 @@ async function sendAuthentication(res, user) {
 
   res.cookie('refreshToken', refreshToken, {
     maxAge: 30 * 24 * 60 * 60 * 1000,
-    httpOnly: true, // клиенсткий js не будет иметь доступа к этому cookie
+    httpOnly: true,
   });
 
   res.send({
